@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>NY Times Search</title>
+  
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+    .header{  
+        color: white;
+        padding:50px;
+        font-size: 50px;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: rgb(7, 12, 85);
+    }
+    .title{
+        color: rgb(7, 12, 85);
+        font-size: 20px;
+    }
+
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <p class="header">New York Times Search</p>
+
+    <div class="card">
+        <div class="card-header"><strong>
+          Search Parameters
+        </strong></div>
+        <div class="card-body">
+         
+    <form>
+        <div class="form-group">
+          <label for="input1">Search Term</label>
+          <input type="name" class="form-control" id="input1" placeholder="Obama">
+        </div>
+        <div class="form-group">
+          <label for="input2">Numbers of Records to Retrieve</label>
+          <input type="name" class="form-control" id="input2" placeholder="5">
+        </div>
+        <div class="form-group">
+            <label for="input3">Start Year (Optional)</label>
+            <input type="name" class="form-control" id="input3" placeholder="2008">
+          </div>
+
+          <div class="form-group">
+            <label for="input4">End Year (Optional)</label>
+            <input type="name" class="form-control" id="input4" placeholder="2016">
+          </div> 
+      </form>
+
+      <button type="button" class="btn btn-secondary" id="search">
+        <span class="glyphicon glyphicon-search"></span> Search</button>
+
+      <button type="button" class="btn btn-secondary"id="clear">
+        <span class="glyphicon glyphicon-trash"></span> Clear Results</button>
+
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><strong>
+      Top Articles
+    </strong></div>
+    <div class="card-body">
+
+      <div id="list"></div>
+
+    </div>
+</div>
+
+      <script type="text/javascript">
+    
+      // displayMovieInfo function re-renders the HTML to display the appropriate content
+      function displaySearchInfo() {
+        var input1 = $("#input1").val().trim();
+        var input2 = $("#input2").val().trim();
+        var input3 = $("#input3").val().trim();
+        var input4 = $("#input4").val().trim();
+    console.log(input1);
+    console.log(input2);
+    console.log(input3);
+    console.log(input4);
+    
+var url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+url += '?' + $.param({
+  'api-key': "882e5752c89d43aab8bda1b02dea4c59",
+  'q': input1,
+  'begin_date': "20030101", //input 3 convert to 
+  'end_date': "20050101",//input 4 convert to
+  'sort': "newest"
+});
+$.ajax({
+  url: url,
+  method: 'GET',
+}).done(function(result) {
+    console.log(result)
+
+  numbers = parseInt(input2);
+   for(i=0; i<input2; i++){
+    var title = result.response.docs[i].headline.main;
+    var pOne = $("<p class = 'title'><strong>").text((i+1) + " " + title);
+    console.log(title)
+    var source = result.response.docs[i].source;
+    console.log("By " + source)
+    var pTwo= $("<p>").text("By " + source);
+    var pubdate = result.response.docs[i].pub_date;
+    console.log(pubdate)
+    var pThree= $("<p>").text(result.response.docs[i].pub_date);
+    var weburl = result.response.docs[i].web_url;
+    console.log(weburl)
+    var pFour = $('<a>',{
+    text: weburl,
+    href: weburl,  
+    })
+
+    $("#list").append(pOne);
+    $("#list").append(pTwo);
+    $("#list").append(pThree);
+    $("#list").append(pFour);
+   }
+
+}).fail(function(err) {
+  throw err;
+});
+}
+      // Adding a click event listener to all elements 
+      $(document).on("click", "#search", displaySearchInfo);
+
+      $("#clear").on("click",function() {   
+     $("#list").empty();
+   });  
+
+   
+    </script>
+  </div>
+</body>
+
+</html>
